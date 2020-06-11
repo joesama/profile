@@ -1,0 +1,27 @@
+preset: package
+
+namespace: Joesama\Profile
+user-auth-provider: App\User
+
+paths:
+  src: src
+  resource: resources
+
+factory:
+  path: database/factories
+
+migration:
+  path: database/migrations
+  prefix: ''
+
+console:
+  namespace: Joesama\Profile\Console
+
+model:
+  namespace: Joesama\Profile\Data\Model
+
+provider:
+  namespace: Joesama\Profile
+
+testing:
+  namespace: Joesama\Profile\Tests
