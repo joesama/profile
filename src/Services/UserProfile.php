@@ -42,6 +42,13 @@ class UserProfile
     private $validation;
 
     /**
+     * Model class name use by application.
+     *
+     * @var string
+     */
+    private $profileModel;
+
+    /**
      * Initiate user profile information service.
      *
      * @param string $uuid
@@ -51,6 +58,10 @@ class UserProfile
         $this->isCreation = ($uuid === null) ? true: false;
 
         $this->profileId = $uuid ?? Str::uuid();
+
+        $this->profileModel = config('profile.has.organization') ?
+        config('profile.model.organization') :
+        config('profile.model.default');
     }
 
     /**
@@ -94,13 +105,9 @@ class UserProfile
      */
     public function profile(array $parameters): Model
     {
-        $profileModel = config('profile.has.organization') ?
-            config('profile.model.organization') :
-            config('profile.model.default');
-
         $parameters[config('profile.user.uuid')] = $this->profileId;
 
-        $profile = $this->model($profileModel)->updateOrCreate(
+        $profile = $this->model($this->profileModel)->updateOrCreate(
             [
 
                 'user_type' => config('profile.user.model'),
@@ -117,5 +124,15 @@ class UserProfile
         event(new ProfileSaved($profile, $parameters, $this->isCreation));
 
         return $profile;
+    }
+
+    /**
+     * Get profile model
+     *
+     * @return Model
+     */
+    public function info(): Model
+    {
+        return $this->model($this->profileModel)->where('user_id', $this->profileId)->first();
     }
 }
