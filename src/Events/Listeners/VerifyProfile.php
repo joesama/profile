@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Queue\InteractsWithQueue;
 use Joesama\Profile\Events\ProfileSaved;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Joesama\Profile\Notifications\VerifyProfile as VerifyProfileNotification;
 
 class VerifyProfile
 {
@@ -19,7 +20,9 @@ class VerifyProfile
     public function handle(ProfileSaved $profile)
     {
         if (config('profile.verification') === true && $profile->creation === true) {
-            dd($profile);
+            $profile->profile->notify(
+                new VerifyProfileNotification($profile->request)
+            );
         }
     }
 }

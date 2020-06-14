@@ -25,7 +25,7 @@ trait ProfileFilter
                     'unit' => collect(data_get($model, 'profile.unit'))->last(),
                     'active' => data_get($model, 'profile.active'),
                     'created_at' => ($created = data_get($model, 'profile.created_at', null)) !== null ? $created->format('d-m-Y') : null,
-                    'activated_at' => ($activate = data_get($model, 'profile.activated_at', null)) !== null ? $activate->format('d-m-Y') : null,
+                    'activated_at' => ($activate = data_get($model, 'profile.activated_at', null)) !== null ? Carbon::parse($activate)->format('d-m-Y') : null,
                 ];
             } else {
                 return [
@@ -37,7 +37,7 @@ trait ProfileFilter
                     'unit' => collect(data_get($model, 'unit'))->last(),
                     'active' => $model->active,
                     'created_at' => ($created = data_get($model, 'created_at', null)) !== null ? $created->format('d-m-Y') : null,
-                    'activated_at' => ($activate = data_get($model, 'activated_at', null)) !== null ? $activate->format('d-m-Y') : null,
+                    'activated_at' => ($activate = data_get($model, 'activated_at', null)) !== null ? Carbon::parse($activate)->format('d-m-Y') : null,
                 ];
             }
         };

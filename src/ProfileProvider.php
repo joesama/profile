@@ -15,6 +15,8 @@ class ProfileProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(ProfileEventProvider::class);
+
+        $this->app['router']->middleware('signed', \Illuminate\Routing\Middleware\ValidateSignature::class);
     }
 
     /**
@@ -28,8 +30,18 @@ class ProfileProvider extends ServiceProvider
 
         $this->loadMigrationsFrom($dir . '/database/migrations');
 
+        $this->loadRoutesFrom($dir . '/routes/web.php');
+
+        $this->loadViewsFrom($dir . '/resources/views', 'profile');
+
+        $this->loadTranslationsFrom($dir . '/resources/lang', 'profile');
+
         $this->publishes([
-            $dir.'/resources/configs/profile.php' => config_path('profile.php'),
+            $dir . '/resources/configs/profile.php' => config_path('profile.php'),
         ], 'config');
+
+        $this->publishes([
+            $dir . '/resources/lang' => resource_path('lang/vendor/profile'),
+        ]);
     }
 }

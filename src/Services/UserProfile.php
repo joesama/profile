@@ -105,7 +105,7 @@ class UserProfile
      */
     public function profile(array $parameters): Model
     {
-        $parameters[config('profile.user.uuid')] = $this->profileId;
+        $parameters[config('profile.user.uuid')] = $parameters['uuid'] = $this->profileId;
 
         $profile = $this->model($this->profileModel)->updateOrCreate(
             [

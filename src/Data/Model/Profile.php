@@ -3,13 +3,14 @@
 namespace Joesama\Profile\Data\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Joesama\Profile\Data\Traits\UseProfileFilter;
 
 class Profile extends Model
 {
-    use SoftDeletes, UseProfileFilter;
+    use Notifiable, SoftDeletes, UseProfileFilter;
     
     protected $table = 'profiles';
 
@@ -24,7 +25,7 @@ class Profile extends Model
     }
 
     /**
-     * The roles that belong to the user.
+     * The user that belong to the profile.
      */
     public function user()
     {
