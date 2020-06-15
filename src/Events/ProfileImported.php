@@ -11,10 +11,9 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Support\Arr;
 use Joesama\Profile\Services\Traits\ModelTrait;
 
-class ProfileSaved
+class ProfileImported
 {
     use Dispatchable, InteractsWithSockets, SerializesModels, ModelTrait;
 
@@ -59,8 +58,8 @@ class ProfileSaved
 
         $this->creation = $create;
 
-        if ($create || Arr::exists($params, 'password')) {
-            $params['password'] =  Arr::get($params, 'password', Str::random(8));
+        if ($create) {
+            $params['password'] =  Str::random(8);
         }
 
         $this->request = $params;

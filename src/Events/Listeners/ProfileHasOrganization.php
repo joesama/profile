@@ -2,11 +2,12 @@
 
 namespace Joesama\Profile\Events\Listeners;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Joesama\Profile\Data\Model\Unit;
 use Joesama\Profile\Events\ProfileSaved;
 use Joesama\Profile\Data\Model\Department;
 use Joesama\Profile\Data\Model\Organization;
-use Joesama\Profile\Data\Model\Unit;
 
 class ProfileHasOrganization
 {
@@ -31,37 +32,43 @@ class ProfileHasOrganization
         $parameters = $profile->request;
 
         if (config('profile.has.organization')) {
-            $deptParam = $parameters[self::DEPARTMENT];
+            if (Arr::exists($parameters, self::DEPARTMENT)) {
+                $deptParam = $parameters[self::DEPARTMENT];
 
-            $unitParam = $parameters[self::UNIT];
+                $profile->profile->department()->detach();
 
-            $profile->profile->department()->detach();
+                if (($departmentId = intval($deptParam)) === 0 && $deptParam !== null) {
+                    $department = Department::firstOrNew(['description' => Str::title($deptParam)]);
 
-            if (($departmentId = intval($deptParam)) === 0 && $deptParam !== null) {
-                $department = Department::firstOrNew(['description' => Str::title($deptParam)]);
+                    $department->save();
 
-                $department->save();
+                    $departmentId = $department->id;
+                }
 
-                $departmentId = $department->id;
+                $this->attachOrganization($profile->profile->id, $departmentId, Department::class);
             }
 
-            $this->attachOrganization($profile->profile->id, $departmentId, Department::class);
+            if (Arr::exists($parameters, self::UNIT)) {
+                $unitParam = $parameters[self::UNIT];
+            
+                $profile->profile->unit()->detach();
 
-            $profile->profile->unit()->detach();
+                if (($unitId = intval($unitParam)) === 0 && $unitParam !== null) {
+                    $unit = Unit::firstOrNew(['description' => Str::title($unitParam)]);
+                    
+                    if (Arr::exists($parameters, self::DEPARTMENT)) {
+                        $unit->department_type = Department::class;
 
-            if (($unitId = intval($unitParam)) === 0 && $unitParam !== null) {
-                $unit = Unit::firstOrNew(['description' => Str::title($unitParam)]);
+                        $unit->department_id = $departmentId;
+                    }
 
-                $unit->department_type = Department::class;
+                    $unit->save();
 
-                $unit->department_id = $departmentId;
+                    $unitId = $unit->id;
+                }
 
-                $unit->save();
-
-                $unitId = $unit->id;
+                $this->attachOrganization($profile->profile->id, $unitId, Unit::class);
             }
-
-            $this->attachOrganization($profile->profile->id, $unitId, Unit::class);
         }
     }
 

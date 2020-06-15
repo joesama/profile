@@ -76,7 +76,7 @@ class UserProfile
         $this->validation = Validator::make($parameters, [
             'email' => [
                 'required',
-                Rule::unique('profiles')->ignore($parameters['uuid'], 'user_id'),
+                Rule::unique('profiles')->ignore($this->profileId, 'user_id'),
                 'email:rfc,filter',
             ],
             'name' => 'required',

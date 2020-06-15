@@ -1,10 +1,9 @@
 <?php
+
 namespace Joesama\Profile\Services;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Validator;
 use Joesama\Profile\Services\Traits\ModelTrait;
 
 /**

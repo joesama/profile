@@ -4,6 +4,7 @@
     "require": {
         "php": "^7.2.5",
         "nesbot/carbon": "^2.32",
+        "maatwebsite/excel": "^3.1",
         "illuminate/support": "^7.0"
     },
     "require-dev": {
