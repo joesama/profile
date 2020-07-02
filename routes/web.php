@@ -21,5 +21,25 @@ Route::middleware(['web','guest'])
                 'profile/verified',
                 'ProfileVerificationController@verified'
             )->name('profile.verification');
+
+            $router->get(
+                'profile/forgot',
+                'ForgotPasswordController@index'
+            )->name('profile.forgot');
+
+            $router->middleware('signed')->post(
+                'profile/forgot/{key}',
+                'ForgotPasswordController@forgot'
+            )->name('profile.forgot.request');
+
+            $router->get(
+                'profile/password/{identity}',
+                'ResetPasswordController@index'
+            )->name('profile.password');
+
+            $router->middleware('signed')->post(
+                'profile/reset/{key}',
+                'ResetPasswordController@reset'
+            )->name('profile.reset');
         });
     });

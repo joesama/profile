@@ -56,8 +56,8 @@ class UserProfile
     public function __construct(string $uuid = null)
     {
         $this->isCreation = ($uuid === null) ? true: false;
-
-        $this->profileId = $uuid ?? Str::uuid();
+        
+        $this->profileIdentification = $uuid ?? Str::uuid();
 
         $this->profileModel = config('profile.has.organization') ?
         config('profile.model.organization') :
@@ -76,7 +76,7 @@ class UserProfile
         $this->validation = Validator::make($parameters, [
             'email' => [
                 'required',
-                Rule::unique('profiles')->ignore($this->profileId, 'user_id'),
+                Rule::unique('profiles')->ignore($this->profileIdentification, 'user_id'),
                 'email:rfc,filter',
             ],
             'name' => 'required',
@@ -105,34 +105,47 @@ class UserProfile
      */
     public function profile(array $parameters): Model
     {
-        $parameters[config('profile.user.uuid')] = $parameters['uuid'] = $this->profileId;
+        $parameters[config('profile.user.uuid')] = $parameters['uuid'] = $this->profileIdentification;
+
+        $updateParams =             [
+            'name' => Arr::get($parameters, 'name'),
+            'email' => Arr::get($parameters, 'email'),
+            'active' => Arr::get($parameters, 'active', false)
+        ];
 
         $profile = $this->model($this->profileModel)->updateOrCreate(
             [
 
                 'user_type' => config('profile.user.model'),
-                'user_id' => $this->profileId
+                'user_id' => $this->profileIdentification
             ],
-            [
-                'name' => Arr::get($parameters, 'name'),
-                'email' => Arr::get($parameters, 'email')
-            ]
+            $updateParams
         );
 
         $profile->save();
 
-        event(new ProfileSaved($profile, $parameters, $this->isCreation));
+        event(new ProfileSaved($profile, $parameters, Arr::get($parameters, 'verify', $this->isCreation)));
 
         return $profile;
     }
 
     /**
-     * Get profile model
+     * Get profile model.
      *
-     * @return Model
+     * @return Model|null
      */
-    public function info(): Model
+    public function info(): ?Model
     {
-        return $this->model($this->profileModel)->where('user_id', $this->profileId)->first();
+        return $this->model($this->profileModel)->where('user_id', $this->profileIdentification)->first();
+    }
+
+    /**
+     * Get profile model by email.
+     *
+     * @return Model|null
+     */
+    public function email(): ?Model
+    {
+        return $this->model($this->profileModel)->where('email', $this->profileIdentification)->first();
     }
 }

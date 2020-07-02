@@ -13,7 +13,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class VerifyProfile extends Notification
+class PasswordRequest extends Notification
 {
     use Queueable;
 
@@ -54,11 +54,11 @@ class VerifyProfile extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject(Str::title(config('app.name')) .' : '. __('profile::verification.email.subject'))
+                    ->subject(Str::title(config('app.name')) .' : '. __('profile::forgot.email.subject'))
                     ->success()
-                    ->line('Profile registeration has success. Your profile need to be verified before activated.')
-                    ->line('Please use this verification key : ' . $this->profileRequest['password'])
-                    ->action('Verify Profile', $this->verificationUrl($notifiable))
+                    ->line(__('profile::forgot.request') . ' has success.')
+                    ->line('Please use this verification key : ' . $this->profileRequest['key'])
+                    ->action(__('profile::forgot.request'), $this->verificationUrl($notifiable))
                     ->line('Thank you for using our application!');
     }
 
@@ -70,10 +70,11 @@ class VerifyProfile extends Notification
      */
     protected function verificationUrl($notifiable)
     {
-        return URL::signedRoute(
-            'profile.verify',
+        return URL::temporarySignedRoute(
+            'profile.password',
+            now()->addMinutes(60),
             [
-                'identity' => $this->profileRequest['uuid']
+                'identity' => $notifiable->user_id
             ]
         );
     }

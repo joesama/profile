@@ -121,7 +121,7 @@ class VerifyProfile extends AbstractProfile implements ProcessProfileContract
             $user->username = $parameter['username'];
         }
 
-        if (($schema->hasColumn($tableName, 'username'))) {
+        if (($schema->hasColumn($tableName, 'password'))) {
             $user->password = Hash::make($parameter['password']);
         }
 
