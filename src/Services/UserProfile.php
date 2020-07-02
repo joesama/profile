@@ -25,7 +25,7 @@ class UserProfile
      *
      * @var string
      */
-    private $profileId;
+    private $profileIdentification;
 
     /**
      * Creation flag.
